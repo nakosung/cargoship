@@ -1,0 +1,14 @@
+{
+  "name": "cargoship",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "BSD",
+  "dependencies": {
+    "seaport": "~1.5.3"
+  }
+}
