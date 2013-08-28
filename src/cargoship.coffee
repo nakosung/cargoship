@@ -14,9 +14,8 @@ module.exports = (seaportloc,role,handler) ->
 		result[0]
 
 	ports = seaport.connect seaportloc...
-	ports.on 'connect', ->
-		server = net.createServer (conn) ->
-			conn.setEncoding 'utf-8'		
-			handler conn
+	server = net.createServer (conn) ->
+		conn.setEncoding 'utf-8'		
+		handler conn
 
-		server.listen ports.register role, host:localIp()
+	server.listen ports.register role, host:localIp()
