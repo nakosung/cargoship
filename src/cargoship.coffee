@@ -16,6 +16,8 @@ old_fn = (seaportloc,role,handler) ->
 	ports = seaport.connect seaportloc...
 	server = net.createServer (conn) ->
 		conn.setEncoding 'utf-8'		
+		conn.on 'error', ->
+			conn.end()
 		handler conn
 
 	server.listen ports.register role, host:localIp()
@@ -23,7 +25,9 @@ old_fn = (seaportloc,role,handler) ->
 new_fn = (opts,handler) ->
 	ports = seaport.connect opts.address...
 	server = net.createServer (conn) ->
-		conn.setEncoding 'utf-8'		
+		conn.setEncoding 'utf-8'
+		conn.on 'error', ->
+			conn.end()			
 		handler conn
 
 	port = ports.register role, host:opts.host or localIp(), port:opts.port	
