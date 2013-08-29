@@ -30,7 +30,7 @@ new_fn = (opts,handler) ->
 			conn.end()			
 		handler conn
 
-	port = ports.register role, host:opts.host or localIp(), port:opts.port	
+	port = ports.register opts.role, host:opts.host or localIp(), port:opts.port	
 	server.listen opts.port or port
 
 module.exports = (args...) ->
