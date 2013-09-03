@@ -92,7 +92,7 @@ cargoship.json = (fallback) ->
 			m.json = JSON.parse m.meta.meta
 			next m
 		catch e
-			m.json = fallback m
+			m.json = fallback m.meta.meta
 			next m
 
 cargoship.new = ->
