@@ -74,6 +74,27 @@ cargoship.http = (m,next) ->
 cargoship.http.preuse = (ship) ->
 	ship.use cargoship.metaParser
 
+cargoship.auth = (m,next) ->
+	user = m.meta.user
+	return m.end() unless user?
+
+	m.user =  
+		id:user.id
+		name:user.name
+
+	next m
+cargoship.auth.preuse = (ship) ->
+	ship.use cargoship.metaParser
+
+cargoship.json = (fallback) ->
+	(m,next) ->
+		try
+			m.json = JSON.parse m.meta.meta
+			next m
+		catch e
+			m.json = fallback m
+			next m
+
 cargoship.new = ->
 	services = []
 	fn = (m,user_next) ->	
