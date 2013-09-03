@@ -108,6 +108,17 @@ cargoship.new = ->
 		f = shot 0	
 		f(m)
 
+	__config = {}
+	__locked = false	
+	fn.config = (k,v) ->
+		if v?
+			throw new Error("cargoship config locked") if __locked
+			__config[k] = v
+		else
+			__config[k]
+	fn.config.lock = ->
+		__locked = true
+
 	_.extend fn,
 		use : (x) ->			
 			return if _.contains services, x
