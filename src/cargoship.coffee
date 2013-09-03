@@ -91,14 +91,7 @@ cargoship.new = ->
 		use : (x) ->			
 			return if _.contains services, x
 			x.preuse?(@)
-			services.push x
-		get : (pattern,action) ->
-			@use cargoship.http
-			services.push (m,next) ->
-				if m.method == 'GET' and pattern.test(m.url)
-					action m
-				else
-					next m	
+			services.push x		
 		launch : (role,loc...) ->
 			cargoship loc, role, (c) ->
 				mx = MuxDemux (m) ->
@@ -112,3 +105,20 @@ cargoship.new = ->
 					console.error 'got error!'
 					c.end()
 
+	['get','post','delete','all'].forEach (v) ->
+		V = v.toUpperCase()		
+
+		test_method = (m) ->
+			m.method == V
+		
+		if v == 'all' 
+			test_method = -> yes
+
+		fn[v] = (pattern,action) ->
+			@use cargoship.http
+			services.push (m,next) ->
+				if test_method(m) and pattern.test(m.url)
+					action m
+				else
+					next m	
+	fn
