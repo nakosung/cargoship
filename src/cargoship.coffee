@@ -1,6 +1,8 @@
 seaport = require 'seaport'
 net = require 'net'
 os = require 'os'
+fs = require 'fs'
+_ = require 'underscore'
 
 localIp = ->
 	result = []
@@ -33,8 +35,70 @@ new_fn = (opts,handler) ->
 	port = ports.register opts.role, host:opts.host or localIp(), port:opts.port	
 	server.listen opts.port or port
 
-module.exports = (args...) ->
+cargoship = module.exports = (args...) ->
 	if args.length == 3
 		old_fn args...
 	else
 		new_fn args...
+
+cargoship.static = (folder) ->
+	(m) ->
+		url = m.url		
+		i = url.indexOf('?')
+		url = url.substr(0,i) if i >= 0
+		
+		s = fs.createReadStream folder + '/' + url
+		s.pipe(m)
+		s.on 'error', -> m.end()
+		s.on 'end', -> m.end()
+
+cargoship.metaParser = (m,next) ->
+	m.meta = JSON.parse m.meta	
+	next m
+
+cargoship.http = (m,next) ->
+	meta = m.meta	
+	try
+		doc = JSON.parse meta.meta
+		if doc.http?
+			m.url = doc.http.url
+			m.method = doc.http.method		
+	catch e
+
+	next m
+
+cargoship.http.preuse = (ship) ->
+	ship.use cargoship.metaParser
+
+cargoship.new = (role) ->
+	services = []
+	fn = (m,user_next) ->	
+		shot = (i) ->			
+			if i == services.length
+				(m,next) -> user_next m, ->
+			else
+				(m,next) ->
+					services[i] m, shot(i+1)
+
+		f = shot 0	
+		f(m)
+
+	_.extend fn,
+		use : (x) ->			
+			return if _.contains services, x
+			x.preuse?(@)
+			services.push x
+		get : (pattern,action) ->
+			@use cargoship.http
+			services.push (m,next) ->
+				if m.method == 'GET' and pattern.test(m.url)
+					action m
+				else
+					next m	
+		launch : (loc...) ->
+			cargoship loc, role, (c) ->
+				mx = MuxDemux (m) ->
+					ship m, (m) ->
+						console.log 'unhandled stream'
+						m.end()						
+				mx.pipe(c).pipe(mx)
