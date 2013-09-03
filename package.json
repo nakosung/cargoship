@@ -9,6 +9,7 @@
   "author": "",
   "license": "BSD",
   "dependencies": {
-    "seaport": "~1.5.3"
+    "seaport": "~1.5.3",
+    "underscore": "~1.5.1"
   }
 }
