@@ -38,7 +38,9 @@ new_fn = (opts,handler) ->
 	server.listen opts.port or port
 
 cargoship = module.exports = (args...) ->
-	if args.length == 3
+	if args.length == 0
+		@new args...
+	else if args.length == 3
 		old_fn args...
 	else
 		new_fn args...
@@ -72,7 +74,7 @@ cargoship.http = (m,next) ->
 cargoship.http.preuse = (ship) ->
 	ship.use cargoship.metaParser
 
-cargoship.new = (role) ->
+cargoship.new = ->
 	services = []
 	fn = (m,user_next) ->	
 		shot = (i) ->			
@@ -97,7 +99,7 @@ cargoship.new = (role) ->
 					action m
 				else
 					next m	
-		launch : (loc...) ->
+		launch : (role,loc...) ->
 			cargoship loc, role, (c) ->
 				mx = MuxDemux (m) ->
 					m.on 'error', ->
