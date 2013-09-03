@@ -103,7 +103,7 @@ cargoship.new = (role) ->
 					m.on 'error', ->
 						console.error 'mux stream got error'
 						m.end()
-					ship m, (m) ->
+					fn m, (m) ->
 						console.error 'unhandled stream'
 						m.end()										
 				es.pipeline(mx,c,mx).on 'error', ->
