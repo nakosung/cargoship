@@ -10,6 +10,8 @@
   "license": "BSD",
   "dependencies": {
     "seaport": "~1.5.3",
-    "underscore": "~1.5.1"
+    "underscore": "~1.5.1",
+    "event-stream": "~3.0.16",
+    "mux-demux": "~3.7.8"
   }
 }

@@ -3,6 +3,8 @@ net = require 'net'
 os = require 'os'
 fs = require 'fs'
 _ = require 'underscore'
+MuxDemux = require 'mux-demux'
+es = require 'event-stream'
 
 localIp = ->
 	result = []
@@ -98,7 +100,13 @@ cargoship.new = (role) ->
 		launch : (loc...) ->
 			cargoship loc, role, (c) ->
 				mx = MuxDemux (m) ->
+					m.on 'error', ->
+						console.error 'mux stream got error'
+						m.end()
 					ship m, (m) ->
-						console.log 'unhandled stream'
-						m.end()						
-				mx.pipe(c).pipe(mx)
+						console.error 'unhandled stream'
+						m.end()										
+				es.pipeline(mx,c,mx).on 'error', ->
+					console.error 'got error!'
+					c.end()
+
