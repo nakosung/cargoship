@@ -112,7 +112,7 @@ cargoship.new = ->
 			m.method == V
 		
 		if v == 'all' 
-			test_method = -> yes
+			test_method = (m) -> m?
 
 		fn[v] = (pattern,action) ->
 			@use cargoship.http
