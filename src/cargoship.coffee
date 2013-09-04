@@ -124,7 +124,7 @@ cargoship.new = ->
 			return if _.contains services, x
 			x.preuse?(@)
 			services.push x		
-		launch : (role,address...) ->
+		launch : (role,loc...) ->
 			opts = {}
 			if loc.length == 0
 				opts = role
