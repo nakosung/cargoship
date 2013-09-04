@@ -78,9 +78,7 @@ cargoship.auth = (m,next) ->
 	user = m.meta.user
 	return m.end() unless user?
 
-	m.user =  
-		id:user.id
-		name:user.name
+	m.user = user
 
 	next m
 cargoship.auth.preuse = (ship) ->
