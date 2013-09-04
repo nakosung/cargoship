@@ -124,8 +124,16 @@ cargoship.new = ->
 			return if _.contains services, x
 			x.preuse?(@)
 			services.push x		
-		launch : (role,loc...) ->
-			cargoship loc, role, (c) ->
+		launch : (role,address...) ->
+			opts = {}
+			if loc.length == 0
+				opts = role
+			else
+				opts =
+					role : role
+					address : address				
+
+			cargoship opts, (c) ->
 				mx = MuxDemux (m) ->
 					m.on 'error', ->
 						console.error 'mux stream got error'
