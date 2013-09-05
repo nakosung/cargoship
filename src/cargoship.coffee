@@ -85,6 +85,16 @@ cargoship.auth = (m,next) ->
 cargoship.auth.preuse = (ship) ->
 	ship.use cargoship.metaParser
 
+cargoship.metameta = (m,next) ->
+	meta = m.meta.meta
+	if meta?
+		try
+			m.metameta = JSON.parse meta
+		catch e
+	next m	
+cargoship.metameta.preuse = (ship) ->
+	ship.use cargoship.metaParser
+
 cargoship.json = (fallback) ->
 	(m,next) ->
 		try
@@ -134,6 +144,8 @@ cargoship.new = ->
 
 			cargoship opts, (c) ->
 				mx = MuxDemux (m) ->
+					m.mx = mx
+					m.on 'end', -> delete m.mx
 					m.on 'error', ->
 						console.error 'mux stream got error'
 						m.end()
