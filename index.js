@@ -1,1 +1,1 @@
-module.exports = require('./lib/cargoship')
+module.exports = require('./src/cargoship')

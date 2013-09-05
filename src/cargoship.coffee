@@ -129,8 +129,8 @@ cargoship.new = ->
 		__locked = true
 
 	_.extend fn,
-		use : (x) ->			
-			return if _.contains services, x
+		use : (x) ->		
+			return if _.contains _.map(services,String), String(x)			
 			x.preuse?(@)
 			services.push x		
 		launch : (role,address...) ->
