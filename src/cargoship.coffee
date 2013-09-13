@@ -5,6 +5,7 @@ fs = require 'fs'
 _ = require 'underscore'
 MuxDemux = require 'mux-demux'
 es = require 'event-stream'
+events = require 'events'
 
 localIp = ->
 	result = []
@@ -155,6 +156,9 @@ cargoship.new = ->
 				es.pipeline(mx,c,mx).on 'error', ->
 					console.error 'got error!'
 					c.end()
+				mx.upstream = c
+				fn.emit 'connect', mx				
+	_.extend fn, new events.EventEmitter()
 
 	['get','post','delete','all'].forEach (v) ->
 		V = v.toUpperCase()		
