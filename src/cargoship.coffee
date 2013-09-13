@@ -143,9 +143,13 @@ cargoship.new = ->
 					role : role
 					address : address				
 
+			[name,version] = role.split('@')
+
 			fn.user = 
 				server : true
-				id : role		
+				id : role	
+				name : name
+				version : version	
 
 			cargoship opts, (c) ->
 				mx = MuxDemux (m) ->
