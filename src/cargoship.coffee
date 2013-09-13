@@ -143,6 +143,10 @@ cargoship.new = ->
 					role : role
 					address : address				
 
+			fn.user = 
+				server : true
+				id : role		
+
 			cargoship opts, (c) ->
 				mx = MuxDemux (m) ->
 					m.mx = mx
