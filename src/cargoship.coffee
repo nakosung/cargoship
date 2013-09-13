@@ -131,7 +131,9 @@ cargoship.new = ->
 
 	_.extend fn,
 		use : (x) ->		
-			return if _.contains _.map(services,String), String(x)			
+			get_signature = (x) ->
+				x?.signature or String(x)
+			return if _.contains _.map(services,get_signature), get_signature(x)
 			x.preuse?(@)
 			services.push x		
 		launch : (role,address...) ->
