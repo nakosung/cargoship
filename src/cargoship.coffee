@@ -140,6 +140,7 @@ cargoship.new = ->
 			opts = {}
 			if address.length == 0
 				opts = role
+				{role} = opts
 			else
 				opts =
 					role : role
