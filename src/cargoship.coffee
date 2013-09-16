@@ -21,7 +21,7 @@ old_fn = (seaportloc,role,handler) ->
 	ports = seaport.connect seaportloc...
 	server = net.createServer (conn) ->
 		conn.setEncoding 'utf-8'		
-		conn.on 'error', ->
+		conn.once 'error', ->
 			conn.end()
 		handler conn
 
@@ -31,7 +31,7 @@ new_fn = (opts,handler) ->
 	ports = seaport.connect opts.address...
 	server = net.createServer (conn) ->
 		conn.setEncoding 'utf-8'
-		conn.on 'error', ->
+		conn.once 'error', ->
 			conn.end()			
 		handler conn
 
@@ -54,8 +54,8 @@ cargoship.static = (folder) ->
 		
 		s = fs.createReadStream folder + '/' + url
 		s.pipe(m)
-		s.on 'error', -> m.end()
-		s.on 'end', -> m.end()
+		s.once 'error', -> m.end()
+		s.once 'end', -> m.end()
 
 cargoship.metaParser = (m,next) ->
 	m.meta = JSON.parse m.meta	
@@ -157,14 +157,14 @@ cargoship.new = ->
 			cargoship opts, (c) ->
 				mx = MuxDemux (m) ->
 					m.mx = mx
-					m.on 'end', -> delete m.mx
-					m.on 'error', ->
+					m.once 'end', -> delete m.mx
+					m.once 'error', ->
 						console.error 'mux stream got error'
 						m.end()
 					fn m, (m) ->
 						console.error 'unhandled stream'
 						m.end()										
-				es.pipeline(mx,c,mx).on 'error', ->
+				es.pipeline(mx,c,mx).once 'error', ->
 					console.error 'got error!'
 					c.end()
 				mx.upstream = c
