@@ -6,6 +6,7 @@ _ = require 'underscore'
 MuxDemux = require 'mux-demux'
 es = require 'event-stream'
 events = require 'events'
+{argv} = require 'optimist'
 
 localIp = ->
 	result = []
@@ -36,7 +37,8 @@ new_fn = (opts,handler) ->
 		handler conn
 
 	port = ports.register opts.role, host:opts.host or localIp(), port:opts.port	
-	server.listen opts.port or port
+	server.listen opts.port or port, ->
+		console.log opts.role, opts.host, opts.port
 
 cargoship = module.exports = (args...) ->
 	if args.length == 0
@@ -169,6 +171,18 @@ cargoship.new = ->
 					c.end()
 				mx.upstream = c
 				fn.emit 'connect', mx				
+		launch2 : (role) ->			
+			address = [process.env.SEAPORT_ADDRESS or 'localhost', process.env.SEAPORT_PORT or 9090]
+
+			if argv.ip? and argv.port?
+				opts = 
+					role : role
+					host : argv.ip
+					port : argv.port
+					address : address
+				@launch opts
+			else
+				@launch role, address...
 	_.extend fn, new events.EventEmitter()
 
 	['get','post','delete','all'].forEach (v) ->
