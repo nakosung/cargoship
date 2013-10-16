@@ -1,4 +1,4 @@
-seaport = require 'seaport'
+seaport = require 'zk-seaport'
 net = require 'net'
 os = require 'os'
 fs = require 'fs'
@@ -18,35 +18,50 @@ localIp = ->
 
 	result[0]
 
-old_fn = (seaportloc,role,handler) ->
-	ports = seaport.connect seaportloc...
-	server = net.createServer (conn) ->
-		conn.setEncoding 'utf-8'		
-		conn.once 'error', ->
-			conn.end()
-		handler conn
-
-	server.listen ports.register role, host:localIp()
-
-new_fn = (opts,handler) ->
-	ports = seaport.connect opts.address...
+lets_sail = (opts,handler) ->
+	ports = seaport process.env
 	server = net.createServer (conn) ->
 		conn.setEncoding 'utf-8'
 		conn.once 'error', ->
 			conn.end()			
 		handler conn
 
-	port = ports.register opts.role, host:opts.host or localIp(), port:opts.port	
-	server.listen opts.port or port, ->
-		console.log opts.role, opts.host, opts.port
+	port = null
+	server.on 'listening', ->
+		console.log "bound to port #{port}"
+		opts.advertise ?= yes
+		if opts.advertise
+			ad = host:opts.host or localIp(), port:port		
+			# console.log "advertise", ad
+			ports.register opts.role, ad
+	bind = (_port) ->
+		# console.log "binding to port #{_port}"
+		port = _port
+		server.listen port
+		server.once 'error', (e) ->
+			if e.code == 'EADDRINUSE'
+				try_another_port()
+	try_another_port = null
+
+	if opts.port?
+		try_another_port = ->
+			throw new Error("Address in use")
+		bind(opts.port)
+	else
+		begin = opts.port_begin or 40000
+		end = opts.port_end or (begin + 10000)
+		cands = _.shuffle(_.range(begin,end))
+		
+		try_another_port = ->
+			throw new Error("No address to use") unless cands.length
+			p = cands.pop()
+			bind p
+
+		try_another_port()	
+	
 
 cargoship = module.exports = (args...) ->
-	if args.length == 0
-		cargoship.new args...
-	else if args.length == 3
-		old_fn args...
-	else
-		new_fn args...
+	cargoship.new args...	
 
 cargoship.static = (folder) ->
 	(m) ->
@@ -138,16 +153,15 @@ cargoship.new = ->
 			return if _.contains _.map(services,get_signature), get_signature(x)
 			x.preuse?(@)
 			services.push x		
-		launch : (role,address...) ->
-			opts = {}
-			if address.length == 0
-				opts = role
-				{role} = opts
-			else
-				opts =
-					role : role
-					address : address				
 
+		launch : (role,_argv) ->			
+			_argv = _.extend (_.extend {}, argv), _argv or {}
+			opts = 
+				role : role
+				host : _argv.ip
+				port : _argv.port
+				advertise : _argv.advertise			
+			
 			[name,version] = role.split('@')
 
 			fn.user = 
@@ -156,7 +170,7 @@ cargoship.new = ->
 				name : name
 				version : version	
 
-			cargoship opts, (c) ->
+			lets_sail opts, (c) ->
 				mx = MuxDemux (m) ->
 					m.mx = mx
 					m.once 'end', -> delete m.mx
@@ -171,18 +185,7 @@ cargoship.new = ->
 					c.end()
 				mx.upstream = c
 				fn.emit 'connect', mx				
-		launch2 : (role) ->			
-			address = [process.env.SEAPORT_ADDRESS or 'localhost', process.env.SEAPORT_PORT or 9090]
-
-			if argv.ip? and argv.port?
-				opts = 
-					role : role
-					host : argv.ip
-					port : argv.port
-					address : address
-				@launch opts
-			else
-				@launch role, address...
+		
 	_.extend fn, new events.EventEmitter()
 
 	['get','post','delete','all'].forEach (v) ->
