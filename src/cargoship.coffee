@@ -97,7 +97,7 @@ cargoship.auth = (m,next) ->
 	return m.end() unless user?
 
 	m.user = user
-	return m.end() unless user.id?
+	return m.end() unless user._id?
 
 	next m
 cargoship.auth.preuse = (ship) ->
