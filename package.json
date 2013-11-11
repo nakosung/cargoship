@@ -13,7 +13,7 @@
     "event-stream": "~3.0.16",
     "mux-demux": "~3.7.8",
     "optimist": "~0.6.0",
-    "zk-seaport": "0.0.0"
+    "zk-seaport": "0.0.1"
   },
   "readme": "Cargoship\n===\n\nCargoship is a server-block which interacts with seaport(http://github.com/substack/seaport). \nWithin your cargoship you can easily add some heavy duties on the server block.\n\nInterface is designed to be similar to express.js.\n\nUsage\n---\n\n``` coffeescript\ncargoship = require 'cargoship'\nship = cargoship()\nship.use (m) -> m.end()\nship.launch 'role@semver', seaport-address\n```\n",
   "readmeFilename": "README.md",
