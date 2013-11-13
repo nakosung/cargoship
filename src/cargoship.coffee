@@ -32,6 +32,8 @@ lets_sail = (opts,handler) ->
 		opts.advertise ?= yes
 		if opts.advertise
 			ad = host:opts.host or localIp(), port:port		
+			if _.isObject opts.advertise
+				_.extend ad, opts.advertise
 			# console.log "advertise", ad
 			ports.register opts.role, ad
 	bind = (_port) ->
