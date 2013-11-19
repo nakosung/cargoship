@@ -179,6 +179,8 @@ cargoship.new = ->
 				name : name
 				version : version	
 
+			fn.emit 'launch'
+
 			lets_sail opts, (c) ->
 				mx = MuxDemux (m) ->
 					m.mx = mx
