@@ -167,7 +167,10 @@ cargoship.new = ->
 				id : _argv.id
 				advertise : _argv.advertise			
 			
+			[role,id] = role.split('#')
 			[name,version] = role.split('@')
+			opts.id ?= id
+			opts.id ?= Math.random().toString(36).substr(2)
 
 			fn.user = 
 				server : true
