@@ -31,7 +31,7 @@ lets_sail = (opts,handler) ->
 		console.log "bound to port #{port}"
 		opts.advertise ?= yes
 		if opts.advertise
-			ad = host:opts.host or localIp(), port:port		
+			ad = host:opts.host or localIp(), port:port, id:opts.id		
 			if _.isObject opts.advertise
 				_.extend ad, opts.advertise
 			# console.log "advertise", ad
@@ -164,6 +164,7 @@ cargoship.new = ->
 				role : role
 				host : _argv.ip
 				port : _argv.port
+				id : _argv.id
 				advertise : _argv.advertise			
 			
 			[name,version] = role.split('@')
@@ -171,10 +172,9 @@ cargoship.new = ->
 			fn.user = 
 				server : true
 				id : role	
+				subid : opts.id
 				name : name
 				version : version	
-
-			fn.emit 'launch'
 
 			lets_sail opts, (c) ->
 				mx = MuxDemux (m) ->
@@ -185,12 +185,16 @@ cargoship.new = ->
 						m.end()
 					fn m, (m) ->
 						console.error 'unhandled stream'
-						m.end()										
+						m.end()					
+				v2 = mx.createStream '/v2'					
+				v2.on 'end', ->
+					console.log 'requires v2'
+					c.end()
 				es.pipeline(mx,c,mx).once 'error', ->
 					console.error 'got error!'
 					c.end()
 				mx.upstream = c
-				fn.emit 'connect', mx				
+				fn.emit 'connect', mx			
 		
 	_.extend fn, new events.EventEmitter()
 
