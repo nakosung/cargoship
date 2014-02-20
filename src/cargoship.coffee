@@ -150,6 +150,8 @@ cargoship.new = ->
 	fn.config.lock = ->
 		__locked = true
 
+
+
 	_.extend fn,
 		use : (x) ->		
 			get_signature = (x) ->
@@ -193,15 +195,28 @@ cargoship.new = ->
 						m.end()					
 				v2 = mx.createStream '/v2'					
 				v2.on 'end', ->
-					console.log 'requires v2'
+					fn.error 'requires v2'
 					c.end()
-				es.pipeline(mx,c,mx).once 'error', ->
-					console.error 'got error!'
+				es.pipeline(mx,c,mx).once 'error', (e) ->
+					fn.error 'got error!', error:e
 					c.end()
 				mx.upstream = c
 				fn.emit 'connect', mx			
 		
 	_.extend fn, new events.EventEmitter()
+
+	## add log
+	fn.log = (msg...) ->
+		console.log (new Date()).toString(), msg...
+
+	['info','error'].map (x) ->
+		fn[x] = (msg,meta) ->
+			fn.log x, msg, meta
+
+	fn.on 'connect', (m) ->
+		fn.info 'connected'
+		m.once 'end', ->
+			fn.info 'disconnected'
 
 	['get','post','delete','all'].forEach (v) ->
 		V = v.toUpperCase()		
