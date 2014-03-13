@@ -60,6 +60,8 @@ lets_sail = (opts,handler) ->
 			bind p
 
 		try_another_port()	
+
+	server.close.bind(server)
 	
 
 cargoship = module.exports = (args...) ->
@@ -183,7 +185,7 @@ cargoship.new = ->
 
 			fn.emit 'launch'
 
-			lets_sail opts, (c) ->
+			@close = lets_sail opts, (c) ->
 				mx = MuxDemux (m) ->
 					m.mx = mx
 					m.once 'end', -> delete m.mx
