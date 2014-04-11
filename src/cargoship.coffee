@@ -164,12 +164,20 @@ cargoship.new = ->
 
 		launch : (role,_argv) ->			
 			_argv = _.extend (_.extend {}, argv), _argv or {}
+
+			if process.env.CARGOSHIP_PORT?
+				{host,port} = (require 'docker-port-parser') process.env.CARGOSHIP_PORT
+				_argv.host ?= host
+				_argv.port ?= port
+
 			opts = 
 				role : role
 				host : _argv.ip
 				port : _argv.port
 				id : _argv.id
 				advertise : _argv.advertise			
+
+			console.log 'launch with options', JSON.stringify opts
 			
 			[role,id] = role.split('#')
 			[name,version] = role.split('@')
