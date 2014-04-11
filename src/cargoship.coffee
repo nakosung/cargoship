@@ -165,9 +165,9 @@ cargoship.new = ->
 		launch : (role,_argv) ->			
 			_argv = _.extend (_.extend {}, argv), _argv or {}
 
-			if process.env.CARGOSHIP_PORT?
+			if process.env.CARGOSHIP_PORT?				
 				{host,port} = (require 'docker-port-parser') process.env.CARGOSHIP_PORT
-				_argv.host ?= host
+				_argv.ip ?= host
 				_argv.port ?= port
 
 			opts = 
