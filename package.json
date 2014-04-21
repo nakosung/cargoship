@@ -1,6 +1,6 @@
 {
   "name": "cargoship",
-  "version": "0.7.9",
+  "version": "0.7.10",
   "description": "Cargoship ===",
   "main": "index.js",
   "scripts": {
