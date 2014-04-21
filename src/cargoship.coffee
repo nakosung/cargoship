@@ -17,6 +17,9 @@ localIp = ->
 			if not i.internal and i.family == 'IPv4'
 				result.push i.address
 
+	if result.length == 0
+		debug os.networkInterfaces()
+
 	result[0]
 
 lets_sail = (opts,handler) ->
@@ -39,7 +42,7 @@ lets_sail = (opts,handler) ->
 
 			if _.isObject opts.advertise
 				ad = _.defaults _.clone(opts.advertise), ad
-				
+
 			debug "advertise", ad
 			unless ad.host?
 				debug 'no host!', opts.advertise, opts.host
