@@ -21,7 +21,7 @@ localIp = ->
 
 lets_sail = (opts,handler) ->
 	debug 'lets_sail with options', opts
-	
+
 	ports = seaport process.env
 	server = net.createServer (conn) ->
 		conn.setEncoding 'utf-8'
@@ -38,7 +38,8 @@ lets_sail = (opts,handler) ->
 			debug "ad calced", ad
 
 			if _.isObject opts.advertise
-				_.extend ad, opts.advertise
+				ad = _.defaults _.clone(opts.advertise), ad
+				
 			debug "advertise", ad
 			unless ad.host?
 				debug 'no host!', opts.advertise, opts.host
