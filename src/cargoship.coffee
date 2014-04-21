@@ -7,6 +7,7 @@ MuxDemux = require 'mux-demux'
 es = require 'event-stream'
 events = require 'events'
 {argv} = require 'optimist'
+debug = (require 'debug') 'cargoship'
 
 localIp = ->
 	result = []
@@ -28,15 +29,15 @@ lets_sail = (opts,handler) ->
 
 	port = null
 	server.on 'listening', ->
-		console.log "bound to port #{port}"
+		debug "bound to port #{port}"
 		opts.advertise ?= yes
 		if opts.advertise
 			ad = host:opts.host or localIp(), port:port, id:opts.id		
 			if _.isObject opts.advertise
 				_.extend ad, opts.advertise
-			console.log "advertise", ad
+			debug "advertise", ad
 			unless ad.host?
-				console.log 'no host!', opts.advertise, opts.host
+				debug 'no host!', opts.advertise, opts.host
 			ports.register opts.role, ad
 	bind = (_port) ->
 		# console.log "binding to port #{_port}"
@@ -179,7 +180,7 @@ cargoship.new = ->
 				id : _argv.id
 				advertise : _argv.advertise			
 
-			console.log 'launch with options', JSON.stringify opts
+			debug 'launch with options', JSON.stringify opts
 			
 			[role,id] = role.split('#')
 			[name,version] = role.split('@')
