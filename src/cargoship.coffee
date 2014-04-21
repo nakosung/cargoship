@@ -34,7 +34,9 @@ lets_sail = (opts,handler) ->
 			ad = host:opts.host or localIp(), port:port, id:opts.id		
 			if _.isObject opts.advertise
 				_.extend ad, opts.advertise
-			# console.log "advertise", ad
+			console.log "advertise", ad
+			unless ad.host?
+				console.log 'no host!', opts.advertise, opts.host
 			ports.register opts.role, ad
 	bind = (_port) ->
 		# console.log "binding to port #{_port}"
