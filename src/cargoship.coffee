@@ -18,7 +18,7 @@ localIp = ->
 				result.push i.address
 
 	if result.length == 0
-		debug os.networkInterfaces()
+		debug 'network interfaces', JSON.stringify os.networkInterfaces()
 
 	result[0]
 
