@@ -33,6 +33,8 @@ lets_sail = (opts,handler) ->
 		opts.advertise ?= yes
 		if opts.advertise
 			ad = host:opts.host or localIp(), port:port, id:opts.id		
+			debug "ad calced", ad
+			
 			if _.isObject opts.advertise
 				_.extend ad, opts.advertise
 			debug "advertise", ad
