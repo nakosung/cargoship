@@ -8,21 +8,22 @@ es = require 'event-stream'
 events = require 'events'
 {argv} = require 'optimist'
 debug = (require 'debug') 'cargoship'
+sleep = require 'sleep'
 
 localIp = ->
 	result = []
 
-	for k,v of os.networkInterfaces()
-		console.log k
-		console.log JSON.stringify v
-		for i in v
-			if not i.internal and i.family == 'IPv4'
-				result.push i.address
+	while true
+		for k,v of os.networkInterfaces()
+			for i in v
+				if not i.internal and i.family == 'IPv4'
+					result.push i.address
 
-	if result.length == 0
-		debug 'network interfaces', JSON.stringify os.networkInterfaces()
+		return result if result.length
+		
+		debug 'no IPv4 wait! network interfaces', JSON.stringify os.networkInterfaces()
 
-	result[0]
+		sleep.usleep 1000
 
 lets_sail = (opts,handler) ->
 	debug 'lets_sail with options', opts
