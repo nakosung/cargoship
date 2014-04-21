@@ -13,6 +13,8 @@ localIp = ->
 	result = []
 
 	for k,v of os.networkInterfaces()
+		console.log k
+		console.log JSON.stringify v
 		for i in v
 			if not i.internal and i.family == 'IPv4'
 				result.push i.address
